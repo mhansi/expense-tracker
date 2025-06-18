@@ -33,7 +33,14 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
   onCancel,
   initialData,
 }) => {
-  const formik = useFormik({
+  const {
+    values,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    touched,
+    errors,
+  } = useFormik({
     initialValues: {
       title: initialData?.title || "",
       amount: initialData?.amount ?? "",
@@ -55,20 +62,16 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
   });
 
   return (
-    <form
-      onSubmit={formik.handleSubmit}
-      className="space-y-4 mt-4 bg-white"
-      aria-label="Expense Form"
-    >
+    <form onSubmit={handleSubmit} className="space-y-4 mt-4 bg-white" aria-label="Expense Form">
       <Input
         id="title"
         name="title"
         label="Title"
         required
-        value={formik.values.title}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        error={formik.touched.title ? formik.errors.title : undefined}
+        value={values.title}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        error={touched.title ? errors.title : undefined}
       />
 
       <div className="flex flex-col md:flex-row gap-4">
@@ -81,10 +84,10 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
             step="0.01"
             label="Amount"
             required
-            value={formik.values.amount}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.amount ? formik.errors.amount : undefined}
+            value={values.amount}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={touched.amount ? errors.amount : undefined}
           />
         </div>
 
@@ -95,10 +98,10 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
             type="date"
             label="Date"
             required
-            value={formik.values.date}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.date ? formik.errors.date : undefined}
+            value={values.date}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={touched.date ? errors.date : undefined}
           />
         </div>
 
@@ -109,11 +112,11 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
           <select
             id="category"
             name="category"
-            value={formik.values.category}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
+            value={values.category}
+            onChange={handleChange}
+            onBlur={handleBlur}
             className={`w-full border px-2 py-2 rounded focus:outline-none focus:ring-2 ${
-              formik.touched.category && formik.errors.category
+              touched.category && errors.category
                 ? "border-red-500 focus:ring-red-400"
                 : "border-gray-300 focus:ring-blue-500"
             }`}
@@ -124,10 +127,8 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
               </option>
             ))}
           </select>
-          {formik.touched.category && formik.errors.category && (
-            <div className="text-red-500 text-sm mt-1">
-              {formik.errors.category}
-            </div>
+          {touched.category && errors.category && (
+            <div className="text-red-500 text-sm mt-1">{errors.category}</div>
           )}
         </div>
       </div>
@@ -137,10 +138,10 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
         name="notes"
         label="Notes"
         rows={2}
-        value={formik.values.notes}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        error={formik.touched.notes ? formik.errors.notes : undefined}
+        value={values.notes}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        error={touched.notes ? errors.notes : undefined}
       />
 
       <div className="flex flex-wrap items-center gap-2 pt-2 justify-end">
