@@ -58,40 +58,42 @@ export const offlineMiddleware: Middleware =
     next(action);
 
     if (action.type === "expenses/syncPending") {
-  dispatch(setSyncing(true));
-  const pendingChanges = getPendingChanges();
+      dispatch(setSyncing(true));
+      const pendingChanges = getPendingChanges();
 
-  for (const change of pendingChanges) {
-    try {
-      if (change.type === "add") {
-        // If the expense has an offline id, keep track of it
-        const isOfflineId = typeof change.expense.id === "string" && change.expense.id.startsWith("offline-");
-        const response = await axios.post("/api/expenses", change.expense);
-        if (isOfflineId) {
-          // Replace the offline expense with the server one
-          dispatch(
-            replaceExpense({
-              oldId: change.expense.id,
-              newExpense: response.data,
-            })
-          );
+      for (const change of pendingChanges) {
+        try {
+          if (change.type === "add") {
+            // If the expense has an offline id, keep track of it
+            const isOfflineId =
+              typeof change.expense.id === "string" &&
+              change.expense.id.startsWith("offline-");
+            const response = await axios.post("/api/expenses", change.expense);
+            if (isOfflineId) {
+              // Replace the offline expense with the server one
+              dispatch(
+                replaceExpense({
+                  oldId: change.expense.id,
+                  newExpense: response.data,
+                })
+              );
+            }
+          } else if (change.type === "update") {
+            const exp = change.expense as Expense;
+            await axios.put(`/api/expenses/${exp.id}`, exp);
+          } else if (change.type === "delete") {
+            const exp = change.expense as { id: string };
+            await axios.delete(`/api/expenses/${exp.id}`);
+          }
+        } catch (error) {
+          dispatch(setSyncing(false));
+          return;
         }
-      } else if (change.type === "update") {
-        const exp = change.expense as Expense;
-        await axios.put(`/api/expenses/${exp.id}`, exp);
-      } else if (change.type === "delete") {
-        const exp = change.expense as { id: string };
-        await axios.delete(`/api/expenses/${exp.id}`);
       }
-    } catch (error) {
-      dispatch(setSyncing(false));
-      return;
-    }
-  }
 
-  setPendingChanges([]);
-  dispatch(clearPendingChanges());
-  dispatch(setSyncing(false));
-  dispatch({ type: "expenses/refetch" });
-}
+      setPendingChanges([]);
+      dispatch(clearPendingChanges());
+      dispatch(setSyncing(false));
+      dispatch({ type: "expenses/refetch" });
+    }
   };
