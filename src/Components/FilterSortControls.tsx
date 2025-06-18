@@ -9,7 +9,7 @@ interface FilterSortProps {
   onOrderChange: (val: "asc" | "desc") => void;
 }
 
-const categories = ["Food", "Travel", "Shopping", "Other"];
+const categories = ["","Food", "Travel", "Shopping", "Other"];
 
 export const FilterSortControls: React.FC<FilterSortProps> = ({
   categoryFilter,
