@@ -20,31 +20,6 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({
 }) => {
   const listRef = useRef<HTMLDivElement>(null);
 
-  // Infinite scroll handler
-  useEffect(() => {
-    const onScroll = () => {
-      if (!listRef.current) return;
-      const { scrollTop, scrollHeight, clientHeight } = listRef.current;
-      if (
-        scrollTop + clientHeight >= scrollHeight - 50 &&
-        hasMore &&
-        !loading
-      ) {
-        onLoadMore();
-      }
-    };
-
-    const el = listRef.current;
-    if (el) {
-      el.addEventListener("scroll", onScroll);
-    }
-    return () => {
-      if (el) {
-        el.removeEventListener("scroll", onScroll);
-      }
-    };
-  }, [hasMore, loading, onLoadMore]);
-
   return (
     <div
       ref={listRef}
