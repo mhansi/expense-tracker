@@ -34,7 +34,7 @@ const ExpenseTrackerInner: React.FC = () => {
   const dispatch = useAppDispatch();
   const isOffline = useAppSelector((state) => state.expenses.offline);
   const isSyncing = useAppSelector((state) => state.expenses.syncing);
-  
+
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState("");
@@ -85,36 +85,6 @@ const ExpenseTrackerInner: React.FC = () => {
     },
   });
 
-  useEffect(() => {
-    const updateNetworkStatus = () => {
-      const offline = !navigator.onLine;
-      dispatch(setOffline(offline));
-      if (!offline) {
-        dispatch({ type: "expenses/syncPending" });
-      }
-    };
-    window.addEventListener("online", updateNetworkStatus);
-    window.addEventListener("offline", updateNetworkStatus);
-    updateNetworkStatus();
-
-    return () => {
-      window.removeEventListener("online", updateNetworkStatus);
-      window.removeEventListener("offline", updateNetworkStatus);
-    };
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (isOffline) {
-      const localDataJson = localStorage.getItem("EXPENSES_LOCAL");
-      if (localDataJson) {
-        try {
-          const localExpenses: Expense[] = JSON.parse(localDataJson);
-          dispatch(setExpensesRedux(localExpenses));
-        } catch {}
-      }
-    }
-  }, [isOffline, dispatch]);
-
   const allExpenses = useAppSelector((state) => state.expenses.expenses);
 
   const handleAdd = (expense: Omit<Expense, "id">) => {
@@ -147,6 +117,36 @@ const ExpenseTrackerInner: React.FC = () => {
   };
 
   const expensesToShow = allExpenses;
+
+  useEffect(() => {
+    const updateNetworkStatus = () => {
+      const offline = !navigator.onLine;
+      dispatch(setOffline(offline));
+      if (!offline) {
+        dispatch({ type: "expenses/syncPending" });
+      }
+    };
+    window.addEventListener("online", updateNetworkStatus);
+    window.addEventListener("offline", updateNetworkStatus);
+    updateNetworkStatus();
+
+    return () => {
+      window.removeEventListener("online", updateNetworkStatus);
+      window.removeEventListener("offline", updateNetworkStatus);
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (isOffline) {
+      const localDataJson = localStorage.getItem("EXPENSES_LOCAL");
+      if (localDataJson) {
+        try {
+          const localExpenses: Expense[] = JSON.parse(localDataJson);
+          dispatch(setExpensesRedux(localExpenses));
+        } catch {}
+      }
+    }
+  }, [isOffline, dispatch]);
 
   return (
     <div className="max-w-3xl mx-auto p-4">
